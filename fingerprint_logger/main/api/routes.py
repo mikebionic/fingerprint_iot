@@ -90,3 +90,22 @@ def fingers_data():
 	}
 
 	return make_response(response)
+
+
+@app.route("/configure_fingerprint/", methods=["POST"])
+def configure_fingerprint():
+	# if not current_user.is_authenticated:
+	# 	abort(401)
+	if request.method == 'POST':
+		data = request.get_json()
+		print(data)
+
+	fingers = Finger.query.all()
+
+	response = {
+		"data": [finger.to_json() for finger in fingers],
+		"total": len(fingers),
+		"message": "Finger data"
+	}
+
+	return make_response(response)
