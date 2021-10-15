@@ -159,7 +159,7 @@ int getFingerprintIDez() {
 
 void send_finger_log_info(int id){
   String argument_data = "?device_key="+device_key+"&finger_id="+id;
-  sendRequest("http://"+serverUrl+"/finger_logger/"+argument_data);
+  sendRequest("http://"+serverUrl+"/finger_logger/",argument_data);
 }
 // http://192.168.1.252:5000/finger_logger/?device_key=finger_seceret&finger_id=3
 
