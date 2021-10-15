@@ -110,6 +110,36 @@ void open_door(){
   digitalWrite(relay,0);
 }
 
+void sendRequest(String path, String sendingData){
+  if(WiFi.status()== WL_CONNECTED){
+    String serverPath = path+sendingData;
+    Serial.println(serverPath);
+    payload = httpGETRequest(serverPath.c_str());
+    Serial.println(payload);
+  }
+  else {
+    Serial.println("WiFi Disconnected");
+  }
+}
+
+String httpGETRequest(const char* serverName) {
+  HTTPClient http;
+  http.begin(serverName);
+  int httpResponseCode = http.GET();  
+  String payload = "{}"; 
+  if (httpResponseCode>0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    payload = http.getString();
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+  return payload;
+}
+
 //--------------------------------------------------------------------------------------------------------
 int getFingerprintIDez() {
   uint8_t p = finger.getImage();
