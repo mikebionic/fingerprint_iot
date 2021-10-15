@@ -24,9 +24,6 @@ yarn-error.log*
 .env
 yarn.lock
 
-static/
-templates/
-
 config.py
 
 *.db

@@ -41,12 +41,12 @@ def login_page():
 
 
 @app.route("/app/access_logs")
-# @login_required
+@login_required
 def access_logs_page():
 	return render_template('index.html')
 
 
 @app.route("/app/fingerprints")
-# @login_required
+@login_required
 def fingerprints_page():
 	return render_template('index.html')

@@ -13,14 +13,14 @@ button = 2
 
 
 IPAddress staticIP(192, 168, 1, 154); //ESP static ip
-IPAddress gateway(192, 168, 1, 1);   //IP Address of your WiFi Router (Gateway) 
+IPAddress gateway(192, 168, 1, 1);   //IP Address of your WiFi Router (Gateway)
 IPAddress subnet(255, 255, 255, 0);  //Subnet mask
 IPAddress dns(8, 8, 8, 8);  //DNS
- 
+
 const char* ssid = "ssid";
 const char* password = "password";
 const char* deviceName = "Finger";
-String serverUrl = "192.168.1.252:5000"; //url of server ? raspberrty pi 
+String serverUrl = "192.168.1.252:5000"; //url of server ? raspberrty pi
 String payload;
 String device_key = "finger_secret_key";
 
@@ -32,7 +32,8 @@ ESP8266WebServer server(80);
 int getFingerprintIDez();
 SoftwareSerial mySerial(15, 13);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
-int button = 5;
+int door_button = 5;
+int key_button = 5;
 int led = 0;
 int relay = 4;
 
@@ -42,13 +43,15 @@ void handlePong() {
 }
 
 
-void setup()  
+void setup()
 {
-   pinMode(relay,OUTPUT);
-   pinMode(led,OUTPUT);
-   pinMode(button,INPUT);
-   digitalWrite(relay,0);
-   digitalWrite(led,0);
+   pinMode(relay, OUTPUT);
+   pinMode(led, OUTPUT);
+   pinMode(door_button, INPUT);
+   pinMode(key_button, INPUT);
+
+   digitalWrite(relay, 0);
+   digitalWrite(led, 0);
   Serial.begin(115200);
   finger.begin(57600);
   if (finger.verifyPassword()) {
@@ -58,7 +61,7 @@ void setup()
     blink();
   }
 
-  
+
   WiFi.begin(ssid, password);
   Serial.println("");
   WiFi.disconnect();
@@ -66,7 +69,7 @@ void setup()
   WiFi.begin(ssid, password);
 
   WiFi.mode(WIFI_STA);
-  
+
   delay(500);
   Serial.println("");
   Serial.println("WiFi connected");
@@ -84,29 +87,36 @@ void loop(){
   long sec = millis();
   query = '*';
   if(Serial.available()>0){
-   query = Serial.read();}
-  while(digitalRead(button) == 1){
+    query = Serial.read();
+  }
+  while(digitalRead(door_button) == 1){
     open_door();
+    send_door_opened_log_info("Button");
     if((sec + 5000) < millis()){
       query = '1';
       break;
     }
-   }
-   
+  }
+
+  if (digitalRead(key_button) == 1){
+    open_door();
+    send_door_opened_log_info("Key");
+  }
+
  switch(query){
   case '1':  Enroll();break;
   case '2':  nowdelete();break;
   case 'D':  deleteF();break;
   default : getFingerprintIDez();break;
  }
-  delay(50);     
+  delay(50);
   query = '*';
 }
 
 
 void open_door(){
   digitalWrite(relay,1);
-  delay(1000);    /// rele second 
+  delay(1000);
   digitalWrite(relay,0);
 }
 
@@ -125,8 +135,8 @@ void sendRequest(String path, String sendingData){
 String httpGETRequest(const char* serverName) {
   HTTPClient http;
   http.begin(serverName);
-  int httpResponseCode = http.GET();  
-  String payload = "{}"; 
+  int httpResponseCode = http.GET();
+  String payload = "{}";
   if (httpResponseCode>0) {
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);
@@ -153,12 +163,16 @@ int getFingerprintIDez() {
   if (p == FINGERPRINT_OK) {open_door();}
 
   send_finger_log_info(finger.fingerID);
-  
-  delay(500);  
+
+  delay(500);
 }
 
 void send_finger_log_info(int id){
   String argument_data = "?device_key="+device_key+"&finger_id="+id;
+  sendRequest("http://"+serverUrl+"/finger_logger/",argument_data);
+}
+void send_door_opened_log_info(String access_type){
+  String argument_data = "?device_key="+device_key+"&access_type="+access_type;
   sendRequest("http://"+serverUrl+"/finger_logger/",argument_data);
 }
 // http://192.168.1.252:5000/finger_logger/?device_key=finger_seceret&finger_id=3
@@ -225,7 +239,7 @@ uint8_t getFingerprintEnroll(uint8_t id) {
       Serial.println("Anykdal yalnyslyk");Serial.println("217");
       return p;
   }
-  
+
   Serial.println("Barmagy ayyr");
   delay(2000);
   p = 0;
@@ -275,8 +289,8 @@ uint8_t getFingerprintEnroll(uint8_t id) {
       Serial.println("Unknown error");Serial.println("stop");Serial.println("217");
       return p;
   }
-  
-  
+
+
   // OK converted!
   p = finger.createModel();
   if (p == FINGERPRINT_OK) {
@@ -290,8 +304,8 @@ uint8_t getFingerprintEnroll(uint8_t id) {
   } else {
     Serial.println("Anykdal yalnyshlyk");Serial.println("217");
     return p;
-  }   
-  
+  }
+
   p = finger.storeModel(k);
   if (p == FINGERPRINT_OK) {
     Serial.println("Yatda sakladym");delay(500);Serial.println(k);
@@ -308,7 +322,7 @@ uint8_t getFingerprintEnroll(uint8_t id) {
     Serial.println("Anykdal yalnyslyk");Serial.println("217");
     return p;
   }
-  
+
 }
 
 
@@ -319,9 +333,9 @@ while(true){
  uint8_t p = finger.loadModel(a);
   switch (p) {
     case FINGERPRINT_OK:
-     
+
      break;
-    
+
     default:
            return a;
       break;
@@ -344,14 +358,14 @@ nul = -5;
   delay(300);
 
 }
- 
+
 deleteFingerprint(nul);
 }
 
 
 uint8_t deleteFingerprint(uint8_t id) {
   uint8_t p = -1;
-  
+
   p = finger.deleteModel(id);
 
   if (p == FINGERPRINT_OK) {
@@ -368,7 +382,7 @@ uint8_t deleteFingerprint(uint8_t id) {
   } else {
     Serial.print("Unknown error: 0x"); Serial.println(p, HEX);
     return p;
-  }   
+  }
 }
 
 void blink(){
@@ -398,5 +412,5 @@ uint8_t deleteF() {
     Serial.print("Unknown error: 0x"); Serial.println(p, HEX);
     return p;
   }
-  } 
+  }
 }

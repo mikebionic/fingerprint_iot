@@ -32,10 +32,11 @@ const AccessLogPage = ({history}) => {
 	return (
 		<>
 			<h4>Access log</h4>
-			<ul class="list-group">
+			<ul className="list-group">
 				{(data.map((log) => 
-					<ListItem key={log.id} text={`${log.id} | Finger id: ${log.finger_id} |  Name: ${log.name}`} badge={log.date}>
-						<span className="badge bg-warning rounded-pill">{log.name}</span>
+					<ListItem key={log.id} text={`${log.id} | Finger id: ${log.finger_id}`} badge={log.date}>
+						<span className="badge bg-secondary rounded-pill">{log.name}</span>
+						<span className="badge bg-success rounded-pill">{log.access_type}</span>
 					</ListItem>
 				))}
 			</ul>

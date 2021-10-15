@@ -53,8 +53,8 @@ def finger_logger():
 
 @app.route("/access_logs/")
 def access_logs():
-	# if not current_user.is_authenticated:
-	# 	abort(401)
+	if not current_user.is_authenticated:
+		abort(401)
 
 	logs = Access_log.query\
 		.options(joinedload(Access_log.finger))\
@@ -78,8 +78,8 @@ def access_logs():
 
 @app.route("/fingerprints_data/")
 def fingers_data():
-	# if not current_user.is_authenticated:
-	# 	abort(401)
+	if not current_user.is_authenticated:
+		abort(401)
 
 	fingers = Finger.query.all()
 
@@ -94,18 +94,28 @@ def fingers_data():
 
 @app.route("/configure_fingerprint/", methods=["POST"])
 def configure_fingerprint():
-	# if not current_user.is_authenticated:
-	# 	abort(401)
+	if not current_user.is_authenticated:
+		abort(401)
 	if request.method == 'POST':
+		data = {}
+
 		data = request.get_json()
-		print(data)
+		finger_id = data.get("finger_id")
+		name = data.get("name")
 
-	fingers = Finger.query.all()
+		this_finger = Finger.query.filter_by(finger_id = finger_id).first()
 
-	response = {
-		"data": [finger.to_json() for finger in fingers],
-		"total": len(fingers),
-		"message": "Finger data"
-	}
+		if this_finger and name:
+			this_finger.name = name
 
-	return make_response(response)
+			db.session.add(this_finger)
+			db.session.commit()
+			data = this_finger.to_json()
+
+		response = {
+			"data": data,
+			"total": 1 if data else 0,
+			"message": "Finger data"
+		}
+
+		return make_response(response)
