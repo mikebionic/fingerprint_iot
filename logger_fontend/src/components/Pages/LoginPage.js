@@ -1,6 +1,6 @@
 import React from 'react'
 
-const server_url = process.env.REACT_APP_SERVER_URL || '127.0.0.1:5000'
+const server_url = window.location.host
 const loginPath = process.env.REACT_APP_LOGIN_URL || '/login'
 
 const LoginPage = () => {
