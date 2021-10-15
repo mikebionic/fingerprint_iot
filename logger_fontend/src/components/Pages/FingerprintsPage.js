@@ -1,32 +1,43 @@
+
 import React, { useState, useEffect } from 'react'
+import { withRouter } from 'react-router-dom'
 
 import ListItem from '../ListItem'
+import Table from '../Table'
 import { fetchFingerprints } from '../../services'
 
-export const FingerprintsPage = () => {
+const FingerprintsPage = ({history}) => {
 
 	const [data, setData] = useState([])
 
 	useEffect(() => {
 		const fetch_fingers = async () => {
-			const fingers_data = await fetchFingerprints()
-			const json_data = await fingers_data.json()
-			setData(json_data.data)
+			try{
+				const fingers_data = await fetchFingerprints()
+				const json_data = await fingers_data.json()
+				setData(json_data.data)
+			} catch (e) {
+				history.push('/app/login')
+			}
 		}
 		fetch_fingers();
-		setInterval(() => {
+		const fetch_interval = setInterval(() => {
 			fetch_fingers()
 		}, 10000);
+
+		return () => {
+			clearInterval(fetch_interval);
+		}	
 	}, [setData])
 
 	return (
 		<>
 			<h4>Fingerprints</h4>
-			<ul class="list-group">
-				{(data.map((finger) =>
-					<ListItem key={finger.id} text={`${finger.id} | Finger id: ${finger.finger_id} | Name: ${finger.name}`} />
-				))}
-				</ul>
+			<Table 
+				data={data}
+			/>
 		</>
 	)
 }
+
+export default withRouter(FingerprintsPage)

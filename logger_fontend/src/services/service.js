@@ -1,8 +1,8 @@
 
-const server_url = process.env.SERVER_URL || '127.0.0.1:5000'
-const fingerprintsPath = process.env.FINGERPRINTS_URL || '/fingerprints_data/'
-const accessLogsPath = process.env.ACCESS_LOGS_URL || '/access_logs/'
-const loginPath = process.env.LOGIN_URL || '/login'
+const server_url = process.env.REACT_APP_SERVER_URL || '127.0.0.1:5000'
+const fingerprintsPath = process.env.REACT_APP_FINGERPRINTS_URL || '/fingerprints_data/'
+const accessLogsPath = process.env.REACT_APP_ACCESS_LOGS_URL || '/access_logs/'
+const loginPath = process.env.REACT_APP_LOGIN_URL || '/login'
 
 export const fetchFingerprints = () => {
 	return fetch(`http://${server_url}${fingerprintsPath}`)

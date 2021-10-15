@@ -6,6 +6,14 @@ export const Tab = () => {
 	return (
 		<>
 			<ul className="nav nav-pills">
+			<li className="nav-item">
+					<NavLink
+						className="nav-link"
+						activeClassName="active" 
+						to="/app/login">
+							Login
+					</NavLink>
+				</li>
 				<li className="nav-item">
 					<NavLink
 						className="nav-link"

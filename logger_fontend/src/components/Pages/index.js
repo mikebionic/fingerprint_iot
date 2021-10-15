@@ -1,5 +1,9 @@
 import LoginPage from './LoginPage'
-export { LoginPage }
-export * from './AccessLogPage'
-export * from './FingerprintsPage'
-// export * from './LoginPage'
+import AccessLogPage from './AccessLogPage'
+import FingerprintsPage from './FingerprintsPage'
+
+export {
+	LoginPage,
+	AccessLogPage,
+	FingerprintsPage
+}
