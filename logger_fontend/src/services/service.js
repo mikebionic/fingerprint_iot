@@ -1,5 +1,5 @@
 
-const server_url = process.env.REACT_APP_SERVER_URL || '127.0.0.1:5000'
+const server_url = window.location.origin  // process.env.REACT_APP_SERVER_URL || '127.0.0.1:5000'
 const fingerprintsPath = process.env.REACT_APP_FINGERPRINTS_PATH || '/fingerprints_data/'
 const accessLogsPath = process.env.REACT_APP_ACCESS_LOGS_PATH || '/access_logs/'
 const loginPath = process.env.REACT_APP_LOGIN_PATH || '/login'
