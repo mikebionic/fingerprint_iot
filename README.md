@@ -44,7 +44,8 @@ If access is approved, the server triggers a **door opening mechanism**.
 
 ## 📷 Demo Preview
 
-![Fingerprint Access System](static/projects/using/fingerprint.webp)
+![Fingerprint Access System](https://mikebionic.github.io/portfolio/static/projects/using/fingerprint.webp)
+
 
 ---
 
